@@ -23,4 +23,4 @@ const jobSeekerSchema = mongoose.Schema({
   savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "JobPosting" }],
 });
 
-module.exports = mongoose.model("JobSeeker", jobSeekerSchema);
+module.exports = mongoose.model("Job_Seeker", jobSeekerSchema);

@@ -12,7 +12,6 @@ const getSeeker = (req, res, next) => {
 const registerSeeker = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
-    console.log(name);
     // Password Complexity Check
     const passwordRegex =
       /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}$/;
@@ -32,7 +31,7 @@ const registerSeeker = async (req, res, next) => {
           error: err,
         });
       }
-      const newSeeker = new userModel({
+      const newUser = new userModel({
         name,
         email,
         password: encryptedPassword,
@@ -47,7 +46,7 @@ const registerSeeker = async (req, res, next) => {
           error: "job seeker email already exist",
         });
       }
-      const savedUser = await newSeeker.save();
+      const savedUser = await newUser.save();
 
       const jobSeekerData = new jobSeekerModel({
         user: savedUser._id,
