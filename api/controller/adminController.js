@@ -1,11 +1,20 @@
 const bcrypt = require("bcrypt");
 const userModel = require("../models/userModel");
+const adminModel = require("../models/adminModel");
 const jwt = require("jsonwebtoken");
 
-const getAdmin = (req, res, next) => {
+const getAdmin = async (req, res, next) => {
   try {
+    const adminData = await adminModel.findOne().populate("user");
+    if (!adminData) {
+      return res.status(404).json({
+        message: "get admin not found",
+        email: req.email,
+      });
+    }
     return res.status(200).json({
       message: "get admin",
+      data: adminData,
     });
   } catch (err) {
     console.log(err.message);
@@ -45,13 +54,21 @@ const registerAdmin = async (req, res, next) => {
         role,
       });
 
-      const alreadyExist = await userModel.findOne({ email, role });
+      const alreadyExist = await userModel.findOne({ email, role: "admin" });
       if (alreadyExist) {
         return res.status(400).json({
           error: "admin already exist",
         });
       }
-      newAdmin.save();
+      const savedUser = await newAdmin.save();
+
+      // Create a new admin with reference to the user
+      const saveAdmin = new adminModel({
+        user: savedUser._id,
+      });
+
+      await saveAdmin.save();
+
       return res.status(201).json({
         message: "Registered",
         data: {
@@ -112,8 +129,19 @@ const loginAdmin = async (req, res, next) => {
   }
 };
 
+const logoutAdmin = async (req, res, next) => {
+  try {
+    return res.status(200).json({
+      message: "admin logged out",
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ message: "Something went wrong during logout" });
+  }
+};
 module.exports = {
   getAdmin,
   registerAdmin,
   loginAdmin,
+  logoutAdmin,
 };
