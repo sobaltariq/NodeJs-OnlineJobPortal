@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 const app = express();
 
 const adminRouter = require("./api/router/adminRouter");
@@ -8,6 +9,10 @@ const jobSeekerRouter = require("./api/router/jobSeekerRouter");
 
 // for env
 require("dotenv").config();
+
+// to use json data (post request data) it display data from body
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 mongoose
   .connect(`${process.env.DB_URL}`)
