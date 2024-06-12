@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
 
 const adminRouter = require("./api/router/adminRouter");
@@ -9,6 +10,16 @@ const jobSeekerRouter = require("./api/router/jobSeekerRouter");
 
 // for env
 require("dotenv").config();
+
+// Disable 'X-Powered-By' header
+app.disable("x-powered-by");
+
+// enabling CORS for some specific origins only.
+let corsOptions = {
+  origin: ["http://localhost:3000"],
+};
+
+app.use(cors(corsOptions));
 
 // to use json data (post request data) it display data from body
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,3 +56,7 @@ app.use((req, res, next) => {
 app.listen(process.env.PORT, () => {
   console.log(`Server started on port ${process.env.PORT}`);
 });
+
+// npm init
+// npm i express mongoose body-parser bcrypt jsonwebtoken nodemon dotenv multer nodemailer randomstring
+// npm i express-session express-validator
