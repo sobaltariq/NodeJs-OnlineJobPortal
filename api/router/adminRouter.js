@@ -7,12 +7,21 @@ const {
 } = require("../controller/adminController");
 const { verifyLoginToken } = require("../middleware/verifyLogin");
 const { checkAdminRole } = require("../middleware/userTypeCheck");
+const {
+  userRegistrationValidationRules,
+} = require("../validator/userValidator");
+const validateUser = require("../middleware/validateUser");
 
 const router = express.Router();
 
 router.get("/", verifyLoginToken, checkAdminRole, getAdmin);
 
-router.post("/register", registerAdmin);
+router.post(
+  "/register",
+  userRegistrationValidationRules(),
+  validateUser,
+  registerAdmin
+);
 
 router.post("/login", loginAdmin);
 

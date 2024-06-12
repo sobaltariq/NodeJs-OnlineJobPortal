@@ -12,15 +12,6 @@ const getSeeker = (req, res, next) => {
 const registerSeeker = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
-    // Password Complexity Check
-    const passwordRegex =
-      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({
-        error:
-          "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-      });
-    }
 
     const salt = await bcrypt.genSalt(10);
 

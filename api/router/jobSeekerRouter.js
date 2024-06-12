@@ -7,12 +7,21 @@ const {
 } = require("../controller/jobSeekerController");
 const { verifyLoginToken } = require("../middleware/verifyLogin");
 const { checkSeekerRole } = require("../middleware/userTypeCheck");
+const {
+  userRegistrationValidationRules,
+} = require("../validator/userValidator");
+const validateUser = require("../middleware/validateUser");
 
 const router = express.Router();
 
 router.get("/", verifyLoginToken, checkSeekerRole, getSeeker);
 
-router.post("/register", registerSeeker);
+router.post(
+  "/register",
+  userRegistrationValidationRules(),
+  validateUser,
+  registerSeeker
+);
 
 router.post("/login", loginSeeker);
 
