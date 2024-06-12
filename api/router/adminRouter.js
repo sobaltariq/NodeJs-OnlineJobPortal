@@ -3,6 +3,7 @@ const {
   getAdmin,
   registerAdmin,
   loginAdmin,
+  changePasswordAdmin,
   logoutAdmin,
 } = require("../controller/adminController");
 const { verifyLoginToken } = require("../middleware/verifyLogin");
@@ -11,6 +12,9 @@ const {
   userRegistrationValidationRules,
 } = require("../validator/userValidator");
 const validateUser = require("../middleware/validateUser");
+const {
+  editPasswordValidationRules,
+} = require("../validator/passwordValidator");
 
 const router = express.Router();
 
@@ -24,6 +28,15 @@ router.post(
 );
 
 router.post("/login", loginAdmin);
+
+router.put(
+  "/change-password",
+  verifyLoginToken,
+  checkAdminRole,
+  editPasswordValidationRules(),
+  validateUser,
+  changePasswordAdmin
+);
 
 router.post("/logout", verifyLoginToken, logoutAdmin);
 

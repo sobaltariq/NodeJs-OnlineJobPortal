@@ -2,6 +2,8 @@ const bcrypt = require("bcrypt");
 const userModel = require("../models/userModel");
 const adminModel = require("../models/adminModel");
 const jwt = require("jsonwebtoken");
+const { comparePassword } = require("../utils/comparePassword");
+const { encryptPassword } = require("../utils/encryptPassword");
 
 const getAdmin = async (req, res, next) => {
   try {
@@ -119,6 +121,37 @@ const loginAdmin = async (req, res, next) => {
   }
 };
 
+const changePasswordAdmin = async (req, res, next) => {
+  const userId = req.user.id;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  try {
+    const adminFound = await userModel.findById(userId);
+
+    const passwordsMatch = await comparePassword(
+      oldPassword,
+      adminFound.password
+    );
+    if (!passwordsMatch) {
+      return res.status(400).json({
+        message: "wrong current password for admin",
+      });
+    } else {
+      const hashedPassword = await encryptPassword(newPassword);
+
+      await userModel.updateOne({ password: hashedPassword });
+
+      return res.status(201).json({
+        message: "Password Changed",
+      });
+    }
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(500)
+      .json({ message: "Something went wrong during changing password" });
+  }
+};
+
 const logoutAdmin = async (req, res, next) => {
   try {
     return res.status(200).json({
@@ -133,5 +166,6 @@ module.exports = {
   getAdmin,
   registerAdmin,
   loginAdmin,
+  changePasswordAdmin,
   logoutAdmin,
 };
