@@ -14,7 +14,7 @@ const getSeeker = async (req, res, next) => {
     if (!seekerData) {
       return res.status(404).json({
         message: "get seeker not found",
-        email: userFound.email,
+        email: req.user.email,
       });
     }
     return res.status(200).json({
@@ -160,7 +160,7 @@ const deleteSeeker = async (req, res, next) => {
   try {
     const userId = req.params.id;
     const authUserId = req.user.id;
-
+    console.log(userId, authUserId);
     if (userId !== authUserId) {
       return res.status(403).json({
         message: "Forbidden: You can only delete your own account",

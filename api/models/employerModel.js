@@ -6,10 +6,6 @@ const employerSchema = mongoose.Schema({
     type: String,
     require: false,
   },
-  companyInfo: {
-    type: String,
-    require: false,
-  },
   jobPostings: [{ type: mongoose.Schema.Types.ObjectId, ref: "JobPosting" }],
 });
 
