@@ -122,9 +122,9 @@ const loginAdmin = async (req, res, next) => {
 };
 
 const changePasswordAdmin = async (req, res, next) => {
-  const userId = req.user.id;
-  const { oldPassword, newPassword, confirmPassword } = req.body;
   try {
+    const userId = req.user.id;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
     const adminFound = await userModel.findById(userId);
 
     const passwordsMatch = await comparePassword(
@@ -153,6 +153,7 @@ const changePasswordAdmin = async (req, res, next) => {
 };
 
 const logoutAdmin = async (req, res, next) => {
+  console.log(req.user);
   try {
     return res.status(200).json({
       message: "admin logged out",

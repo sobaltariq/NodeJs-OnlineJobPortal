@@ -4,6 +4,7 @@ const {
   registerSeeker,
   loginSeeker,
   deleteSeeker,
+  changePasswordSeeker,
 } = require("../controller/jobSeekerController");
 const { verifyLoginToken } = require("../middleware/verifyLogin");
 const { checkSeekerRole } = require("../middleware/userTypeCheck");
@@ -11,6 +12,9 @@ const {
   userRegistrationValidationRules,
 } = require("../validator/userValidator");
 const validateUser = require("../middleware/validateUser");
+const {
+  editPasswordValidationRules,
+} = require("../validator/passwordValidator");
 
 const router = express.Router();
 
@@ -25,6 +29,15 @@ router.post(
 
 router.post("/login", loginSeeker);
 
-router.delete("/delete/:id", deleteSeeker);
+router.put(
+  "/change-password",
+  verifyLoginToken,
+  checkSeekerRole,
+  editPasswordValidationRules(),
+  validateUser,
+  changePasswordSeeker
+);
+
+router.delete("/delete/:id", verifyLoginToken, checkSeekerRole, deleteSeeker);
 
 module.exports = router;

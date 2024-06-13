@@ -2,11 +2,31 @@ const bcrypt = require("bcrypt");
 const userModel = require("../models/userModel");
 const jobSeekerModel = require("../models/jobSeekerModel");
 const jwt = require("jsonwebtoken");
+const { encryptPassword } = require("../utils/encryptPassword");
+const { comparePassword } = require("../utils/comparePassword");
 
-const getSeeker = (req, res, next) => {
-  return res.status(200).json({
-    message: "get job seeker",
-  });
+const getSeeker = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const seekerData = await jobSeekerModel
+      .findOne({ user: userId })
+      .populate("user");
+    if (!seekerData) {
+      return res.status(404).json({
+        message: "get seeker not found",
+        email: userFound.email,
+      });
+    }
+    return res.status(200).json({
+      message: "get seeker",
+      data: seekerData,
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(501).json({
+      error: "Internal server error when getting seeker",
+    });
+  }
 };
 
 const registerSeeker = async (req, res, next) => {
@@ -105,15 +125,71 @@ const loginSeeker = async (req, res, next) => {
   }
 };
 
+const changePasswordSeeker = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const seekerFound = await userModel.findById(userId);
+
+    const passwordsMatch = await comparePassword(
+      oldPassword,
+      seekerFound.password
+    );
+    if (!passwordsMatch) {
+      return res.status(400).json({
+        message: "wrong current password for seeker",
+      });
+    } else {
+      const hashedPassword = await encryptPassword(newPassword);
+
+      await userModel.findByIdAndUpdate(userId, { password: hashedPassword });
+
+      return res.status(201).json({
+        message: "Password Changed",
+      });
+    }
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(500)
+      .json({ message: "Something went wrong during changing password" });
+  }
+};
+
 const deleteSeeker = async (req, res, next) => {
-  return res.status(200).json({
-    message: "Job Seeker has been deleted",
-  });
+  try {
+    const userId = req.params.id;
+    const authUserId = req.user.id;
+
+    if (userId !== authUserId) {
+      return res.status(403).json({
+        message: "Forbidden: You can only delete your own account",
+      });
+    }
+
+    const userDeleted = await userModel.findByIdAndDelete(userId);
+    if (!userDeleted) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    await jobSeekerModel.findOneAndDelete({ user: userId });
+
+    return res.status(200).json({
+      message: "Job Seeker has been deleted",
+    });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({
+      message: "Internal server error when deleting user",
+    });
+  }
 };
 
 module.exports = {
   getSeeker,
   registerSeeker,
   loginSeeker,
+  changePasswordSeeker,
   deleteSeeker,
 };
