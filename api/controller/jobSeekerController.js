@@ -5,6 +5,27 @@ const jwt = require("jsonwebtoken");
 const { encryptPassword } = require("../utils/encryptPassword");
 const { comparePassword } = require("../utils/comparePassword");
 
+const getAllSeeker = async (req, res, next) => {
+  try {
+    const seekerData = await jobSeekerModel.findOne().populate("user");
+    if (!seekerData) {
+      return res.status(404).json({
+        message: "get all seeker not found",
+        email: req.user.email,
+      });
+    }
+    return res.status(200).json({
+      message: "get all seeker",
+      data: seekerData,
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(501).json({
+      error: "Internal server error when getting all seeker",
+    });
+  }
+};
+
 const getSeekerProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -25,6 +46,29 @@ const getSeekerProfile = async (req, res, next) => {
     console.log(err.message);
     res.status(501).json({
       error: "Internal server error when getting seeker",
+    });
+  }
+};
+
+const getOneSeeker = async (req, res, next) => {
+  try {
+    const seekerId = req.params.id;
+    console.log(seekerId);
+    const seekerData = await jobSeekerModel.findById(seekerId).populate("user");
+    if (!seekerData) {
+      return res.status(404).json({
+        message: "get one seeker not found",
+        email: req.user.email,
+      });
+    }
+    return res.status(200).json({
+      message: "get one seeker",
+      data: seekerData,
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(501).json({
+      error: "Internal server error when getting one seeker",
     });
   }
 };
@@ -217,7 +261,9 @@ const deleteSeeker = async (req, res, next) => {
 };
 
 module.exports = {
+  getAllSeeker,
   getSeekerProfile,
+  getOneSeeker,
   editSeekerProfile,
   registerSeeker,
   loginSeeker,

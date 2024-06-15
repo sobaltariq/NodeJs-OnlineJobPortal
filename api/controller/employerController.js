@@ -4,6 +4,27 @@ const userModel = require("../models/userModel");
 const { comparePassword } = require("../utils/comparePassword");
 const { encryptPassword } = require("../utils/encryptPassword");
 
+const getAllEmployers = async (req, res, next) => {
+  try {
+    const employerData = await employerModel.find().populate("user");
+    if (!employerData) {
+      return res.status(404).json({
+        message: "get all employer not found",
+        email: req.user.email,
+      });
+    }
+    return res.status(200).json({
+      message: "get employer",
+      data: employerData,
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(501).json({
+      error: "Internal server error when getting all employer",
+    });
+  }
+};
+
 const getEmployerProfile = async (req, res, next) => {
   console.log(req.body);
   try {
@@ -13,7 +34,7 @@ const getEmployerProfile = async (req, res, next) => {
       .populate("user");
     if (!employerData) {
       return res.status(404).json({
-        message: "get seeker not found",
+        message: "get employer not found",
         email: req.user.email,
       });
     }
@@ -25,6 +46,29 @@ const getEmployerProfile = async (req, res, next) => {
     console.log(err.message);
     res.status(501).json({
       error: "Internal server error when getting employer",
+    });
+  }
+};
+
+const getOneEmployer = async (req, res, next) => {
+  console.log(req.params.id);
+  try {
+    const userId = req.params.id;
+    const employerData = await employerModel.findById(userId).populate("user");
+    if (!employerData) {
+      return res.status(404).json({
+        message: "get one employer not found",
+        email: req.params.email,
+      });
+    }
+    return res.status(200).json({
+      message: "get one employer",
+      data: employerData,
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(501).json({
+      error: "Internal server error when getting one employer",
     });
   }
 };
@@ -175,7 +219,9 @@ const deleteEmployer = async (req, res, next) => {
 };
 
 module.exports = {
+  getAllEmployers,
   getEmployerProfile,
+  getOneEmployer,
   registerEmployer,
   loginEmployer,
   changePasswordEmployer,

@@ -1,6 +1,8 @@
 const express = require("express");
 const {
+  getAllEmployers,
   getEmployerProfile,
+  getOneEmployer,
   registerEmployer,
   loginEmployer,
   deleteEmployer,
@@ -31,6 +33,10 @@ const {
 const router = express.Router();
 
 router.get("/profile", verifyLoginToken, checkEmployerRole, getEmployerProfile);
+
+router.get("/", verifyLoginToken, checkEmployerRole, getAllEmployers);
+
+router.get("/:id", verifyLoginToken, checkEmployerRole, getOneEmployer);
 
 router.post(
   "/register",

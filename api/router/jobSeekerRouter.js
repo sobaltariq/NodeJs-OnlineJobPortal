@@ -1,6 +1,8 @@
 const express = require("express");
 const {
+  getAllSeeker,
   getSeekerProfile,
+  getOneSeeker,
   editSeekerProfile,
   registerSeeker,
   loginSeeker,
@@ -42,6 +44,10 @@ router.put(
 );
 
 router.get("/profile", verifyLoginToken, checkSeekerRole, getSeekerProfile);
+
+router.get("/", verifyLoginToken, checkSeekerRole, getAllSeeker);
+
+router.get("/:id", verifyLoginToken, checkSeekerRole, getOneSeeker);
 
 router.put(
   "/profile/:id",
