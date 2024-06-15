@@ -81,7 +81,6 @@ const registerAdmin = async (req, res, next) => {
 const loginAdmin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
 
     const adminFound = await userModel.findOne({ email, role: "admin" });
     if (!adminFound) {
@@ -90,28 +89,23 @@ const loginAdmin = async (req, res, next) => {
       });
     }
 
-    await bcrypt.compare(password, adminFound.password, (err, result) => {
-      if (err) {
-        return res.status(500).json({
-          message: "something went wrong when logging in admin",
-        });
-      }
-      if (!result) {
-        return res.status(400).json({
-          message: "wrong password admin",
-        });
-      }
+    const passwordMatch = await comparePassword(password, adminFound.password);
 
-      const token = jwt.sign(
-        { id: adminFound._id, email: adminFound.email, role: adminFound.role },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
-      );
-
-      return res.status(200).json({
-        message: "login admin",
-        token,
+    if (!passwordMatch) {
+      return res.status(400).json({
+        message: "Wrong password admin",
       });
+    }
+
+    const token = jwt.sign(
+      { id: adminFound._id, email: adminFound.email, role: adminFound.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "120d" }
+    );
+
+    return res.status(200).json({
+      message: "login admin",
+      token,
     });
   } catch (err) {
     console.log(err.message);

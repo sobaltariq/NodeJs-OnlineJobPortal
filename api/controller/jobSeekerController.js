@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { encryptPassword } = require("../utils/encryptPassword");
 const { comparePassword } = require("../utils/comparePassword");
 
-const getSeeker = async (req, res, next) => {
+const getSeekerProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const seekerData = await jobSeekerModel
@@ -26,6 +26,36 @@ const getSeeker = async (req, res, next) => {
     res.status(501).json({
       error: "Internal server error when getting seeker",
     });
+  }
+};
+
+const editSeekerProfile = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const { education, skills, workExperience } = req.body;
+    console.log(req.params.id, req.user.id);
+    const seekerFound = await jobSeekerModel.findByIdAndUpdate(
+      userId,
+      {
+        education,
+        skills,
+        workExperience,
+      },
+      { new: true }
+    );
+
+    if (!seekerFound) {
+      return res.status(404).json({ message: "Job Seeker not found" });
+    }
+
+    return res.status(201).json({
+      message: "Edited seeker profile",
+    });
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(500)
+      .json({ message: "Something went wrong during editing seeker profile" });
   }
 };
 
@@ -187,7 +217,8 @@ const deleteSeeker = async (req, res, next) => {
 };
 
 module.exports = {
-  getSeeker,
+  getSeekerProfile,
+  editSeekerProfile,
   registerSeeker,
   loginSeeker,
   changePasswordSeeker,

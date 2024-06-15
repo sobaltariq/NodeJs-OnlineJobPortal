@@ -4,7 +4,7 @@ const userModel = require("../models/userModel");
 const { comparePassword } = require("../utils/comparePassword");
 const { encryptPassword } = require("../utils/encryptPassword");
 
-const getEmployer = async (req, res, next) => {
+const getEmployerProfile = async (req, res, next) => {
   console.log(req.body);
   try {
     const userId = req.user.id;
@@ -97,7 +97,7 @@ const loginEmployer = async (req, res, next) => {
         role: employerFound.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "120d" }
     );
 
     return res.status(200).json({
@@ -175,7 +175,7 @@ const deleteEmployer = async (req, res, next) => {
 };
 
 module.exports = {
-  getEmployer,
+  getEmployerProfile,
   registerEmployer,
   loginEmployer,
   changePasswordEmployer,

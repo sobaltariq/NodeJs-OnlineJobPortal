@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  getEmployer,
+  getEmployerProfile,
   registerEmployer,
   loginEmployer,
   deleteEmployer,
@@ -8,10 +8,7 @@ const {
 } = require("../controller/employerController");
 
 const { verifyLoginToken } = require("../middleware/verifyLogin");
-const {
-  checkSeekerRole,
-  checkEmployerRole,
-} = require("../middleware/userTypeCheck");
+const { checkEmployerRole } = require("../middleware/userTypeCheck");
 const {
   userRegistrationValidationRules,
 } = require("../validator/userValidator");
@@ -19,10 +16,21 @@ const validateUser = require("../middleware/validateUser");
 const {
   editPasswordValidationRules,
 } = require("../validator/passwordValidator");
+const {
+  createJobPosting,
+  updateJobPosting,
+  deleteJobPosting,
+  getAllJobPostings,
+  getMyJobPostings,
+  getOneJobPostings,
+} = require("../controller/jobPostingController");
+const {
+  jobPostingValidationRules,
+} = require("../validator/jobPostingValidator");
 
 const router = express.Router();
 
-router.get("/", verifyLoginToken, checkEmployerRole, getEmployer);
+router.get("/profile", verifyLoginToken, checkEmployerRole, getEmployerProfile);
 
 router.post(
   "/register",
@@ -49,4 +57,50 @@ router.delete(
   deleteEmployer
 );
 
+// Job Posting Management
+router.post(
+  "/job-postings",
+  verifyLoginToken,
+  checkEmployerRole,
+  jobPostingValidationRules(),
+  validateUser,
+  createJobPosting
+);
+
+router.put(
+  "/job-postings/:id",
+  verifyLoginToken,
+  checkEmployerRole,
+  jobPostingValidationRules(),
+  validateUser,
+  updateJobPosting
+);
+
+router.delete(
+  "/job-postings/:id",
+  verifyLoginToken,
+  checkEmployerRole,
+  deleteJobPosting
+);
+
+router.get(
+  "/job-postings/all-jobs",
+  verifyLoginToken,
+  checkEmployerRole,
+  getAllJobPostings
+);
+
+router.get(
+  "/job-postings/my-jobs",
+  verifyLoginToken,
+  checkEmployerRole,
+  getMyJobPostings
+);
+
+router.get(
+  "/job-postings/:id",
+  verifyLoginToken,
+  checkEmployerRole,
+  getOneJobPostings
+);
 module.exports = router;

@@ -1,6 +1,7 @@
 const express = require("express");
 const {
-  getSeeker,
+  getSeekerProfile,
+  editSeekerProfile,
   registerSeeker,
   loginSeeker,
   deleteSeeker,
@@ -15,10 +16,12 @@ const validateUser = require("../middleware/validateUser");
 const {
   editPasswordValidationRules,
 } = require("../validator/passwordValidator");
+const {
+  editSeekerValidationRules,
+} = require("../validator/editSeekerValidator");
 
+// ##### start here #####
 const router = express.Router();
-
-router.get("/", verifyLoginToken, checkSeekerRole, getSeeker);
 
 router.post(
   "/register",
@@ -36,6 +39,17 @@ router.put(
   editPasswordValidationRules(),
   validateUser,
   changePasswordSeeker
+);
+
+router.get("/profile", verifyLoginToken, checkSeekerRole, getSeekerProfile);
+
+router.put(
+  "/profile/:id",
+  verifyLoginToken,
+  checkSeekerRole,
+  editSeekerValidationRules(),
+  validateUser,
+  editSeekerProfile
 );
 
 router.delete("/delete/:id", verifyLoginToken, checkSeekerRole, deleteSeeker);
