@@ -29,6 +29,13 @@ const {
 const {
   jobPostingValidationRules,
 } = require("../validator/jobPostingValidator");
+const {
+  getApplicationsForJobPosting,
+  editApplicationsForJobPosting,
+} = require("../controller/applicationController");
+const {
+  editApplicationValidationRules,
+} = require("../validator/editApplicationValidator");
 
 const router = express.Router();
 
@@ -108,5 +115,22 @@ router.get(
   verifyLoginToken,
   checkEmployerRole,
   getOneJobPostings
+);
+
+// Application
+router.get(
+  "/applications/job/:id",
+  verifyLoginToken,
+  checkEmployerRole,
+  getApplicationsForJobPosting
+);
+
+router.put(
+  "/applications/job/:id/status",
+  verifyLoginToken,
+  checkEmployerRole,
+  editApplicationValidationRules(),
+  validateUser,
+  editApplicationsForJobPosting
 );
 module.exports = router;

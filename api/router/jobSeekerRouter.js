@@ -21,6 +21,13 @@ const {
 const {
   editSeekerValidationRules,
 } = require("../validator/editSeekerValidator");
+const {
+  applicationValidationRules,
+} = require("../validator/applicationValidator");
+const {
+  applyJobApplication,
+  getMyApplications,
+} = require("../controller/applicationController");
 
 // ##### start here #####
 const router = express.Router();
@@ -59,5 +66,22 @@ router.put(
 );
 
 router.delete("/delete/:id", verifyLoginToken, checkSeekerRole, deleteSeeker);
+
+// Application Routes for Job Seeker
+router.post(
+  "/application",
+  verifyLoginToken,
+  checkSeekerRole,
+  applicationValidationRules(),
+  validateUser,
+  applyJobApplication
+);
+
+router.get(
+  "/application/my-applications",
+  verifyLoginToken,
+  checkSeekerRole,
+  getMyApplications
+);
 
 module.exports = router;
