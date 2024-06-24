@@ -1,4 +1,5 @@
 const applicationModel = require("../models/applicationModel");
+const chatModel = require("../models/chatModel");
 const employerModel = require("../models/employerModel");
 const jobPostingModel = require("../models/jobPostingModel");
 const jobSeekerModel = require("../models/jobSeekerModel");
@@ -173,6 +174,7 @@ const editApplicationsForJobPosting = async (req, res, next) => {
       { $set: { status } },
       { new: true }
     );
+
     res.status(501).json({
       message: "Successfully edited application",
     });

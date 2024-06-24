@@ -39,8 +39,14 @@ const getEmployerProfile = async (req, res, next) => {
       });
     }
     return res.status(200).json({
-      message: "get employer",
-      data: employerData,
+      message: "get employer profile",
+      employerId: employerData._id,
+      userId: employerData.user._id,
+      role: employerData.user.role,
+      name: employerData.user.name,
+      email: employerData.user.email,
+      createdAt: employerData.user.createdAt,
+      jobPostings: employerData.jobPostings,
     });
   } catch (err) {
     console.log(err.message);
@@ -121,7 +127,7 @@ const loginEmployer = async (req, res, next) => {
     const employerFound = await userModel.findOne({ email, role: "employer" });
     if (!employerFound) {
       return res.status(400).json({
-        message: "invalid email",
+        message: "Invalid Employer Email",
       });
     }
 
@@ -146,6 +152,7 @@ const loginEmployer = async (req, res, next) => {
 
     return res.status(200).json({
       message: "login employer",
+      role: employerFound.role,
       token,
     });
   } catch (err) {

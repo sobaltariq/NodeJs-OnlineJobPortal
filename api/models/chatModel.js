@@ -7,12 +7,12 @@ const chatSchema = new mongoose.Schema(
       ref: "Application",
       required: true,
     },
-    sender: {
+    employer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    receiver: {
+    seeker: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -20,6 +20,10 @@ const chatSchema = new mongoose.Schema(
     message: {
       type: String,
       required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   { timestamps: true }

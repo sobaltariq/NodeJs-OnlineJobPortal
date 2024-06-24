@@ -160,7 +160,7 @@ const loginSeeker = async (req, res, next) => {
     const seekerFound = await userModel.findOne({ email, role: "job seeker" });
     if (!seekerFound) {
       return res.status(400).json({
-        message: "invalid email",
+        message: "Invalid Job Seeker Email",
       });
     }
 
@@ -188,6 +188,7 @@ const loginSeeker = async (req, res, next) => {
 
       return res.status(200).json({
         message: "login job seeker",
+        role: seekerFound.role,
         token,
       });
     });

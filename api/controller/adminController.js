@@ -85,7 +85,7 @@ const loginAdmin = async (req, res, next) => {
     const adminFound = await userModel.findOne({ email, role: "admin" });
     if (!adminFound) {
       return res.status(400).json({
-        message: "invalid email",
+        message: "Invalid Admin Email",
       });
     }
 
@@ -105,6 +105,7 @@ const loginAdmin = async (req, res, next) => {
 
     return res.status(200).json({
       message: "login admin",
+      role: adminFound.role,
       token,
     });
   } catch (err) {
