@@ -3,6 +3,7 @@ const employerModel = require("../models/employerModel");
 const userModel = require("../models/userModel");
 const { comparePassword } = require("../utils/comparePassword");
 const { encryptPassword } = require("../utils/encryptPassword");
+const { generateToken } = require("../utils/jwtTokenUtils");
 
 const getAllEmployers = async (req, res, next) => {
   try {
@@ -105,11 +106,22 @@ const registerEmployer = async (req, res, next) => {
       user: savedUser._id,
     });
 
-    const savedJobEmployer = await employerData.save();
+    const savedEmployer = await employerData.save();
+    const populatedEmployer = await employerModel
+      .findById(savedEmployer._id)
+      .populate("user");
+
+    const token = generateToken({
+      id: populatedEmployer.user?._id,
+      email: populatedEmployer.user?.email,
+      role: populatedEmployer.user?.role,
+    });
 
     return res.status(201).json({
       message: "Registered",
-      data: savedJobEmployer,
+      populatedEmployer,
+      role: populatedEmployer.user?.role,
+      token,
     });
   } catch (err) {
     console.log(err.message);
@@ -140,15 +152,11 @@ const loginEmployer = async (req, res, next) => {
         message: "wrong password employer",
       });
     }
-    const token = jwt.sign(
-      {
-        id: employerFound._id,
-        email: employerFound.email,
-        role: employerFound.role,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "120d" }
-    );
+    const token = generateToken({
+      id: employerFound._id,
+      email: employerFound.email,
+      role: employerFound.role,
+    });
 
     return res.status(200).json({
       message: "login employer",

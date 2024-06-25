@@ -4,6 +4,7 @@ const adminModel = require("../models/adminModel");
 const jwt = require("jsonwebtoken");
 const { comparePassword } = require("../utils/comparePassword");
 const { encryptPassword } = require("../utils/encryptPassword");
+const { generateToken } = require("../utils/jwtTokenUtils");
 
 const getAdmin = async (req, res, next) => {
   try {
@@ -60,13 +61,22 @@ const registerAdmin = async (req, res, next) => {
       });
 
       await saveAdmin.save();
+      const populatedAdmin = await adminModel
+        .findById(saveAdmin._id)
+        .populate("user");
 
+      const token = generateToken({
+        id: populatedAdmin.user?._id,
+        email: populatedAdmin.user?.email,
+        role: populatedAdmin.user?.role,
+      });
       return res.status(201).json({
         message: "Registered",
         data: {
           name,
           email,
           role,
+          token,
         },
       });
     });
@@ -97,11 +107,11 @@ const loginAdmin = async (req, res, next) => {
       });
     }
 
-    const token = jwt.sign(
-      { id: adminFound._id, email: adminFound.email, role: adminFound.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "120d" }
-    );
+    const token = generateToken({
+      id: adminFound._id,
+      email: adminFound.email,
+      role: adminFound.role,
+    });
 
     return res.status(200).json({
       message: "login admin",
