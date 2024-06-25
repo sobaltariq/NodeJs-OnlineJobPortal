@@ -5,12 +5,12 @@ const editPasswordValidationRules = () => {
     body("oldPassword").notEmpty().withMessage("Old password is required"),
     body("newPassword")
       .isLength({ min: 8 })
-      .withMessage("Password must be at least 8 characters long")
+      .withMessage("New Password must be at least 8 characters long")
       .matches(
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}$/
       )
       .withMessage(
-        "Password must contain an uppercase letter, a lowercase letter, a number, and a special character"
+        "New Password must contain an uppercase letter, a lowercase letter, a number, and a special character"
       )
       .custom((value, { req }) => {
         if (value === req.body.oldPassword) {

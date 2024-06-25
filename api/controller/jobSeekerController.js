@@ -40,8 +40,15 @@ const getSeekerProfile = async (req, res, next) => {
       });
     }
     return res.status(200).json({
-      message: "get seeker",
-      data: seekerData,
+      message: "get seeker profile",
+      employerId: seekerData._id,
+      userId: seekerData.user._id,
+      role: seekerData.user.role,
+      name: seekerData.user.name,
+      email: seekerData.user.email,
+      createdAt: seekerData.user.createdAt,
+      skills: seekerData.skills,
+      savedJobs: seekerData.savedJobs,
     });
   } catch (err) {
     console.log(err.message);
@@ -218,7 +225,7 @@ const changePasswordSeeker = async (req, res, next) => {
     );
     if (!passwordsMatch) {
       return res.status(400).json({
-        message: "wrong current password for seeker",
+        message: "Wrong current password for seeker",
       });
     } else {
       const hashedPassword = await encryptPassword(newPassword);

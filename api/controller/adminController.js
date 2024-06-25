@@ -138,7 +138,7 @@ const changePasswordAdmin = async (req, res, next) => {
     );
     if (!passwordsMatch) {
       return res.status(400).json({
-        message: "wrong current password for admin",
+        message: "Wrong current password for admin",
       });
     } else {
       const hashedPassword = await encryptPassword(newPassword);

@@ -183,7 +183,7 @@ const changePasswordEmployer = async (req, res, next) => {
     );
     if (!passwordsMatch) {
       return res.status(400).json({
-        message: "wrong current password for employer",
+        message: "Wrong current password for employer",
       });
     } else {
       const hashedPassword = await encryptPassword(newPassword);
