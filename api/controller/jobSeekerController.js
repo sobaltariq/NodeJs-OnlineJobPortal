@@ -40,7 +40,7 @@ const getSeekerProfile = async (req, res, next) => {
       });
     }
     return res.status(200).json({
-      message: "get seeker profile",
+      message: "Get seeker profile",
       employerId: seekerData._id,
       userId: seekerData.user._id,
       role: seekerData.user.role,
@@ -62,16 +62,27 @@ const getOneSeeker = async (req, res, next) => {
   try {
     const seekerId = req.params.id;
     console.log(seekerId);
-    const seekerData = await jobSeekerModel.findById(seekerId).populate("user");
+    const seekerData = await jobSeekerModel
+      .findById(seekerId)
+      .populate("user")
+      .populate("skills")
+      .populate("savedJobs");
     if (!seekerData) {
       return res.status(404).json({
-        message: "get one seeker not found",
+        message: "Seeker not found",
         email: req.user.email,
       });
     }
     return res.status(200).json({
       message: "get one seeker",
-      data: seekerData,
+      employerId: seekerData._id,
+      userId: seekerData.user._id,
+      role: seekerData.user.role,
+      name: seekerData.user.name,
+      email: seekerData.user.email,
+      createdAt: seekerData.user.createdAt,
+      skills: seekerData.skills,
+      savedJobs: seekerData.savedJobs,
     });
   } catch (err) {
     console.log(err.message);

@@ -40,7 +40,7 @@ const getEmployerProfile = async (req, res, next) => {
       });
     }
     return res.status(200).json({
-      message: "get employer profile",
+      message: "Get employer profile",
       employerId: employerData._id,
       userId: employerData.user._id,
       role: employerData.user.role,
@@ -61,16 +61,25 @@ const getOneEmployer = async (req, res, next) => {
   console.log(req.params.id);
   try {
     const userId = req.params.id;
-    const employerData = await employerModel.findById(userId).populate("user");
+    const employerData = await employerModel
+      .findById(userId)
+      .populate("user")
+      .populate("jobPostings");
     if (!employerData) {
       return res.status(404).json({
-        message: "get one employer not found",
+        message: "Employer not found",
         email: req.params.email,
       });
     }
     return res.status(200).json({
-      message: "get one employer",
-      data: employerData,
+      message: "Get one employer",
+      employerId: employerData._id,
+      userId: employerData.user._id,
+      role: employerData.user.role,
+      name: employerData.user.name,
+      email: employerData.user.email,
+      createdAt: employerData.user.createdAt,
+      jobPostings: employerData.jobPostings,
     });
   } catch (err) {
     console.log(err.message);
