@@ -54,7 +54,7 @@ router.get("/profile", verifyLoginToken, checkSeekerRole, getSeekerProfile);
 
 router.get("/", verifyLoginToken, checkSeekerRole, getAllSeeker);
 
-router.get("/:id", verifyLoginToken, checkSeekerRole, getOneSeeker);
+router.get("/:id", verifyLoginToken, getOneSeeker);
 
 router.put(
   "/profile/:id",

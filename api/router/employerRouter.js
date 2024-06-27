@@ -43,7 +43,7 @@ router.get("/profile", verifyLoginToken, checkEmployerRole, getEmployerProfile);
 
 router.get("/", verifyLoginToken, checkEmployerRole, getAllEmployers);
 
-router.get("/:id", verifyLoginToken, checkEmployerRole, getOneEmployer);
+router.get("/:id", verifyLoginToken, getOneEmployer);
 
 router.post(
   "/register",
