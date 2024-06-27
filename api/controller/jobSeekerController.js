@@ -48,6 +48,8 @@ const getSeekerProfile = async (req, res, next) => {
       email: seekerData.user.email,
       createdAt: seekerData.user.createdAt,
       skills: seekerData.skills,
+      education: seekerData.education,
+      workExperience: seekerData.workExperience,
       savedJobs: seekerData.savedJobs,
     });
   } catch (err) {
