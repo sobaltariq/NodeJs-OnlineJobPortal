@@ -41,7 +41,7 @@ const getSeekerProfile = async (req, res, next) => {
     }
     return res.status(200).json({
       message: "Get seeker profile",
-      employerId: seekerData._id,
+      seekerId: seekerData._id,
       userId: seekerData.user._id,
       role: seekerData.user.role,
       name: seekerData.user.name,
@@ -77,7 +77,7 @@ const getOneSeeker = async (req, res, next) => {
     }
     return res.status(200).json({
       message: "get one seeker",
-      employerId: seekerData._id,
+      seekerId: seekerData._id,
       userId: seekerData.user._id,
       role: seekerData.user.role,
       name: seekerData.user.name,
