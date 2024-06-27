@@ -52,7 +52,7 @@ router.put(
 
 router.get("/profile", verifyLoginToken, checkSeekerRole, getSeekerProfile);
 
-router.get("/", verifyLoginToken, checkSeekerRole, getAllSeeker);
+router.get("/", verifyLoginToken, getAllSeeker);
 
 router.get("/:id", verifyLoginToken, getOneSeeker);
 

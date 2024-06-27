@@ -8,16 +8,31 @@ const { generateToken } = require("../utils/jwtTokenUtils");
 
 const getAllSeeker = async (req, res, next) => {
   try {
-    const seekerData = await jobSeekerModel.findOne().populate("user");
+    const seekerData = await jobSeekerModel
+      .find()
+      .populate("user")
+      .populate("savedJobs");
     if (!seekerData) {
       return res.status(404).json({
         message: "get all seeker not found",
         email: req.user.email,
       });
     }
+    const formattedSeekers = seekerData.map((seeker) => ({
+      seekerId: seeker._id,
+      userId: seeker.user._id,
+      role: seeker.user.role,
+      name: seeker.user.name,
+      email: seeker.user.email,
+      createdAt: seeker.user.createdAt,
+      skills: seeker.skills,
+      education: seeker.education,
+      workExperience: seeker.workExperience,
+      savedJobs: seeker.savedJobs,
+    }));
     return res.status(200).json({
       message: "get all seeker",
-      data: seekerData,
+      data: formattedSeekers,
     });
   } catch (err) {
     console.log(err.message);

@@ -14,9 +14,18 @@ const getAllEmployers = async (req, res, next) => {
         email: req.user.email,
       });
     }
+    const formattedEmployers = employerData.map((employer) => ({
+      employerId: employer._id,
+      userId: employer.user._id,
+      role: employer.user.role,
+      name: employer.user.name,
+      email: employer.user.email,
+      createdAt: employer.user.createdAt,
+      jobPostings: employer.jobPostings,
+    }));
     return res.status(200).json({
       message: "get employer",
-      data: employerData,
+      data: formattedEmployers,
     });
   } catch (err) {
     console.log(err.message);

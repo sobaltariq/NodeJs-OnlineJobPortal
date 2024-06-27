@@ -41,7 +41,7 @@ const router = express.Router();
 
 router.get("/profile", verifyLoginToken, checkEmployerRole, getEmployerProfile);
 
-router.get("/", verifyLoginToken, checkEmployerRole, getAllEmployers);
+router.get("/", verifyLoginToken, getAllEmployers);
 
 router.get("/:id", verifyLoginToken, getOneEmployer);
 
