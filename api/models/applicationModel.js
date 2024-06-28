@@ -12,10 +12,6 @@ const applicationSchema = mongoose.Schema(
       ref: "JobPosting",
       required: true,
     },
-    dateApplied: {
-      type: Date,
-      default: Date.now,
-    },
     status: {
       type: String,
       enum: ["pending", "accepted", "rejected"],

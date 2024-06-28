@@ -17,10 +17,11 @@ const getAllJobPostings = async (req, res, next) => {
     }
 
     const formattedJobs = jobPostingsFound.map((jobPost) => ({
+      jobId: jobPost._id,
       title: jobPost.title,
       createdAt: jobPost.createdAt,
       description: jobPost.description,
-      userId: jobPost.employer.user.id,
+      userId: jobPost.employer.user._id,
       userName: jobPost.employer.user.name,
       location: jobPost.location,
       requirements: jobPost.requirements,
@@ -36,14 +37,13 @@ const getAllJobPostings = async (req, res, next) => {
 
     return res.status(200).json({
       message: "get all job postings",
-      // data: jobPostingsFound,
-
       data: formattedJobs,
     });
   } catch (err) {
     console.log(err.message);
     res.status(501).json({
       error: "Internal server error when getting all job postings",
+      message: err.message,
     });
   }
 };
@@ -85,18 +85,42 @@ const getOneJobPostings = async (req, res, next) => {
     const jobId = req.params.id;
     console.log(jobId);
 
-    const foundMyJobs = await jobPostingModel.find({
-      _id: jobId,
-    });
-    if (!foundMyJobs) {
+    const jobFound = await jobPostingModel.findById(jobId).populate([
+      { path: "applications" },
+      {
+        path: "employer",
+        populate: { path: "user" },
+      },
+    ]);
+    if (!jobFound) {
       return res.status(404).json({
         message: "get one job postings not found",
         email: req.user.email,
       });
     }
+
+    const formattedJob = {
+      jobId: jobFound._id,
+      jobTitle: jobFound.title,
+      jobCreatedAt: jobFound.createdAt,
+      jobDescription: jobFound.description,
+      jobLocation: jobFound.location,
+      jobRequirements: jobFound.requirements,
+      jobSalary: jobFound.salary,
+      jobCompany: jobFound.companyName,
+      employerId: jobFound.employer.user._id,
+      employerName: jobFound.employer.user.name,
+      applications: jobFound.applications.map((app) => ({
+        appId: app._id,
+        appJobSeeker: app.jobSeeker,
+        appStatus: app.status,
+        appCreatedAt: app.createdAt,
+      })),
+    };
+
     return res.status(200).json({
       message: "get one job posting",
-      data: foundMyJobs,
+      data: formattedJob,
     });
   } catch (err) {
     console.log(err.message);

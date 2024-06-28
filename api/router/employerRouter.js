@@ -113,7 +113,7 @@ router.get(
 router.get(
   "/job-postings/:id",
   verifyLoginToken,
-  checkEmployerRole,
+  // checkEmployerRole,
   getOneJobPostings
 );
 

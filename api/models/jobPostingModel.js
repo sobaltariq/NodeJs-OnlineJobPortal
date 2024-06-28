@@ -30,10 +30,6 @@ const jobPostingSchema = mongoose.Schema(
       type: String,
       required: false,
     },
-    dataPosted: {
-      type: Date,
-      default: Date.now,
-    },
     applications: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Application" },
     ],

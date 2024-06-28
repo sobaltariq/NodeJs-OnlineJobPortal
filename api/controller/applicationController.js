@@ -54,7 +54,7 @@ const applyJobApplication = async (req, res, next) => {
 
     const seekerFound = await jobSeekerModel.findOne({ user: userId });
     if (!seekerFound) {
-      return res.status(404).json({ message: "Employer not found" });
+      return res.status(404).json({ message: "Seeker not found" });
     }
 
     const jobFound = await jobPostingModel.findById(jobId);
