@@ -99,7 +99,7 @@ router.delete(
 router.get(
   "/job-postings/all-jobs",
   verifyLoginToken,
-  checkEmployerRole,
+  // checkEmployerRole,
   getAllJobPostings
 );
 

@@ -3,15 +3,42 @@ const jobPostingModel = require("../models/jobPostingModel");
 
 const getAllJobPostings = async (req, res, next) => {
   try {
-    const jobPostingsFound = await jobPostingModel.find().populate("employer");
+    const jobPostingsFound = await jobPostingModel.find().populate([
+      { path: "applications" },
+      {
+        path: "employer",
+        populate: { path: "user" },
+      },
+    ]);
     if (!jobPostingsFound) {
       return res.status(404).json({
         message: "get all job postings not found",
       });
     }
+
+    const formattedJobs = jobPostingsFound.map((jobPost) => ({
+      title: jobPost.title,
+      createdAt: jobPost.createdAt,
+      description: jobPost.description,
+      userId: jobPost.employer.user.id,
+      userName: jobPost.employer.user.name,
+      location: jobPost.location,
+      requirements: jobPost.requirements,
+      salary: jobPost.salary,
+      applications: jobPost.applications.map((app) => ({
+        appId: app._id,
+        jobSeeker: app.jobSeeker,
+        jobPosting: app.jobPosting,
+        status: app.status,
+        createdAt: app.createdAt,
+      })),
+    }));
+
     return res.status(200).json({
       message: "get all job postings",
-      data: jobPostingsFound,
+      // data: jobPostingsFound,
+
+      data: formattedJobs,
     });
   } catch (err) {
     console.log(err.message);
