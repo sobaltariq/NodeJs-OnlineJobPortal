@@ -59,18 +59,30 @@ const getMyJobPostings = async (req, res, next) => {
       });
     }
 
-    const foundMyJobs = await jobPostingModel.find({
+    const myJobsFound = await jobPostingModel.find({
       _id: employerFound.jobPostings,
     });
-    if (!foundMyJobs) {
+    if (!myJobsFound) {
       return res.status(404).json({
         message: "get my job postings not found",
         email: req.user.email,
       });
     }
+    const formattedJobs = myJobsFound.map((jobPost) => ({
+      jobId: jobPost._id,
+      title: jobPost.title,
+      applications: jobPost.applications,
+      companyName: jobPost.companyName,
+      createdAt: jobPost.createdAt,
+      description: jobPost.description,
+      employer: jobPost.employer,
+      location: jobPost.location,
+      requirements: jobPost.requirements,
+      salary: jobPost.salary,
+    }));
     return res.status(200).json({
       message: "get my job postings",
-      data: foundMyJobs,
+      data: formattedJobs,
     });
   } catch (err) {
     console.log(err.message);
