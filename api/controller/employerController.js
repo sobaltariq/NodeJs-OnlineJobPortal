@@ -41,22 +41,31 @@ const getEmployerProfile = async (req, res, next) => {
     const userId = req.user.id;
     const employerData = await employerModel
       .findOne({ user: userId })
-      .populate("user");
+      .populate("user")
+      .populate("jobPostings");
     if (!employerData) {
       return res.status(404).json({
         message: "get employer not found",
         email: req.user.email,
       });
     }
-    return res.status(200).json({
-      message: "Get employer profile",
+
+    const formattedJob = {
       employerId: employerData._id,
       userId: employerData.user._id,
-      role: employerData.user.role,
-      name: employerData.user.name,
-      email: employerData.user.email,
-      createdAt: employerData.user.createdAt,
-      jobPostings: employerData.jobPostings,
+      userRole: employerData.user.role,
+      userName: employerData.user.name,
+      userEmail: employerData.user.email,
+      userCreatedAt: employerData.user.createdAt,
+      jobPostings: employerData.jobPostings.map((jobPost) => ({
+        jobPostId: jobPost._id,
+        jobPostTitle: jobPost.title,
+      })),
+    };
+
+    return res.status(200).json({
+      message: "Get employer profile",
+      data: formattedJob,
     });
   } catch (err) {
     console.log(err.message);
@@ -80,15 +89,23 @@ const getOneEmployer = async (req, res, next) => {
         email: req.params.email,
       });
     }
-    return res.status(200).json({
-      message: "Get one employer",
+
+    const formattedJob = {
       employerId: employerData._id,
       userId: employerData.user._id,
-      role: employerData.user.role,
-      name: employerData.user.name,
-      email: employerData.user.email,
-      createdAt: employerData.user.createdAt,
-      jobPostings: employerData.jobPostings,
+      userRole: employerData.user.role,
+      userName: employerData.user.name,
+      userEmail: employerData.user.email,
+      userCreatedAt: employerData.user.createdAt,
+      jobPostings: employerData.jobPostings.map((jobPost) => ({
+        jobPostId: jobPost._id,
+        jobPostTitle: jobPost.title,
+      })),
+    };
+
+    return res.status(200).json({
+      message: "Get one employer",
+      data: formattedJob,
     });
   } catch (err) {
     console.log(err.message);

@@ -54,18 +54,22 @@ const getSeekerProfile = async (req, res, next) => {
         email: req.user.email,
       });
     }
-    return res.status(200).json({
-      message: "Get seeker profile",
+
+    const formattedJob = {
       seekerId: seekerData._id,
       userId: seekerData.user._id,
-      role: seekerData.user.role,
-      name: seekerData.user.name,
-      email: seekerData.user.email,
-      createdAt: seekerData.user.createdAt,
-      skills: seekerData.skills,
-      education: seekerData.education,
-      workExperience: seekerData.workExperience,
-      savedJobs: seekerData.savedJobs,
+      userRole: seekerData.user.role,
+      userName: seekerData.user.name,
+      userEmail: seekerData.user.email,
+      userCreatedAt: seekerData.user.createdAt,
+      seekerSkills: seekerData.skills,
+      seekerEducation: seekerData.education,
+      seekerWorkExperience: seekerData.workExperience,
+      seekerSavedJobs: seekerData.savedJobs,
+    };
+    return res.status(200).json({
+      message: "Get seeker profile",
+      data: formattedJob,
     });
   } catch (err) {
     console.log(err.message);
@@ -90,16 +94,21 @@ const getOneSeeker = async (req, res, next) => {
         email: req.user.email,
       });
     }
-    return res.status(200).json({
-      message: "get one seeker",
+    const formattedJob = {
       seekerId: seekerData._id,
       userId: seekerData.user._id,
-      role: seekerData.user.role,
-      name: seekerData.user.name,
-      email: seekerData.user.email,
-      createdAt: seekerData.user.createdAt,
-      skills: seekerData.skills,
-      savedJobs: seekerData.savedJobs,
+      userRole: seekerData.user.role,
+      userName: seekerData.user.name,
+      userEmail: seekerData.user.email,
+      userCreatedAt: seekerData.user.createdAt,
+      seekerSkills: seekerData.skills,
+      seekerEducation: seekerData.education,
+      seekerWorkExperience: seekerData.workExperience,
+      seekerSavedJobs: seekerData.savedJobs,
+    };
+    return res.status(200).json({
+      message: "get one seeker",
+      data: formattedJob,
     });
   } catch (err) {
     console.log(err.message);

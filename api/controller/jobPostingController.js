@@ -259,9 +259,9 @@ const deleteJobPosting = async (req, res, next) => {
 
 module.exports = {
   createJobPosting,
+  getAllJobPostings,
+  getOneJobPostings,
   updateJobPosting,
   deleteJobPosting,
-  getAllJobPostings,
   getMyJobPostings,
-  getOneJobPostings,
 };
