@@ -34,9 +34,18 @@ const getMyApplications = async (req, res, next) => {
         email: req.user.email,
       });
     }
+
+    const formattedApplications = applicationFound.map((app) => ({
+      appDate: app.createdAt,
+      appStatus: app.status,
+      jobId: app.jobPosting._id,
+      jobTitle: app.jobPosting.title,
+      jobCreatedAt: app.jobPosting.createdAt,
+    }));
+
     return res.status(200).json({
       message: "get my job applications",
-      data: applicationFound,
+      data: formattedApplications,
     });
   } catch (err) {
     console.log(err.message);
@@ -62,6 +71,14 @@ const applyJobApplication = async (req, res, next) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
+    const isAlreadyApplied = await applicationModel.findOne({
+      jobSeeker: seekerFound._id,
+      jobPosting: jobFound._id,
+    });
+    if (isAlreadyApplied) {
+      return res.status(404).json({ message: "Already has applied" });
+    }
+
     const newApplication = new applicationModel({
       jobSeeker: seekerFound._id,
       jobPosting: jobFound._id,
@@ -75,7 +92,7 @@ const applyJobApplication = async (req, res, next) => {
     );
     return res.status(201).json({
       message: "Job application submitted successfully",
-      data: newApplication,
+      // data: newApplication,
     });
   } catch (err) {
     console.log(err.message);
@@ -169,7 +186,7 @@ const editApplicationsForJobPosting = async (req, res, next) => {
         message: `Application is already ${status}`,
       });
     }
-    const updatedStatusApplication = await applicationModel.findByIdAndUpdate(
+    await applicationModel.findByIdAndUpdate(
       applicationFound._id,
       { $set: { status } },
       { new: true }
