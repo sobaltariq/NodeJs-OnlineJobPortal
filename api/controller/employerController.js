@@ -154,7 +154,8 @@ const registerEmployer = async (req, res, next) => {
 
     return res.status(201).json({
       message: "Registered",
-      populatedEmployer,
+      id: populatedEmployer.user?._id,
+      email: populatedEmployer.user?.email,
       role: populatedEmployer.user?.role,
       token,
     });
@@ -195,6 +196,8 @@ const loginEmployer = async (req, res, next) => {
 
     return res.status(200).json({
       message: "login employer",
+      id: employerFound._id,
+      email: employerFound.email,
       role: employerFound.role,
       token,
     });

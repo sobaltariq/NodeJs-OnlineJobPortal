@@ -18,20 +18,20 @@ const getAllJobPostings = async (req, res, next) => {
 
     const formattedJobs = jobPostingsFound.map((jobPost) => ({
       jobId: jobPost._id,
-      title: jobPost.title,
-      createdAt: jobPost.createdAt,
-      description: jobPost.description,
-      userId: jobPost.employer.user._id,
-      userName: jobPost.employer.user.name,
-      location: jobPost.location,
-      requirements: jobPost.requirements,
-      salary: jobPost.salary,
+      jobTitle: jobPost.title,
+      jobCreatedAt: jobPost.createdAt,
+      jobDescription: jobPost.description,
+      jobLocation: jobPost.location,
+      jobRequirements: jobPost.requirements,
+      jobSalary: jobPost.salary,
+      jobCompany: jobPost.companyName,
+      employerUserId: jobPost.employer.user._id,
+      employerName: jobPost.employer.user.name,
       applications: jobPost.applications.map((app) => ({
         appId: app._id,
-        jobSeeker: app.jobSeeker,
-        jobPosting: app.jobPosting,
-        status: app.status,
-        createdAt: app.createdAt,
+        appJobSeeker: app.jobSeeker,
+        appStatus: app.status,
+        appCreatedAt: app.createdAt,
       })),
     }));
 
@@ -59,9 +59,17 @@ const getMyJobPostings = async (req, res, next) => {
       });
     }
 
-    const myJobsFound = await jobPostingModel.find({
-      _id: employerFound.jobPostings,
-    });
+    const myJobsFound = await jobPostingModel
+      .find({
+        _id: employerFound.jobPostings,
+      })
+      .populate([
+        { path: "applications" },
+        {
+          path: "employer",
+          populate: { path: "user" },
+        },
+      ]);
     if (!myJobsFound) {
       return res.status(404).json({
         message: "get my job postings not found",
@@ -70,15 +78,21 @@ const getMyJobPostings = async (req, res, next) => {
     }
     const formattedJobs = myJobsFound.map((jobPost) => ({
       jobId: jobPost._id,
-      title: jobPost.title,
-      applications: jobPost.applications,
-      companyName: jobPost.companyName,
-      createdAt: jobPost.createdAt,
-      description: jobPost.description,
-      employer: jobPost.employer,
-      location: jobPost.location,
-      requirements: jobPost.requirements,
-      salary: jobPost.salary,
+      jobTitle: jobPost.title,
+      jobCreatedAt: jobPost.createdAt,
+      jobDescription: jobPost.description,
+      jobLocation: jobPost.location,
+      jobRequirements: jobPost.requirements,
+      jobSalary: jobPost.salary,
+      jobCompany: jobPost.companyName,
+      employerUserId: jobPost.employer.user._id,
+      employerName: jobPost.employer.user.name,
+      applications: jobPost.applications.map((app) => ({
+        appId: app._id,
+        appJobSeeker: app.jobSeeker,
+        appStatus: app.status,
+        appCreatedAt: app.createdAt,
+      })),
     }));
     return res.status(200).json({
       message: "get my job postings",
@@ -120,7 +134,7 @@ const getOneJobPostings = async (req, res, next) => {
       jobRequirements: jobFound.requirements,
       jobSalary: jobFound.salary,
       jobCompany: jobFound.companyName,
-      employerId: jobFound.employer.user._id,
+      employerUserId: jobFound.employer.user._id,
       employerName: jobFound.employer.user.name,
       applications: jobFound.applications.map((app) => ({
         appId: app._id,
