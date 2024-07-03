@@ -125,7 +125,7 @@ router.get(
   getApplicationsForJobPosting
 );
 
-router.put(
+router.patch(
   "/applications/job/:id/status",
   verifyLoginToken,
   checkEmployerRole,

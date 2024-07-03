@@ -129,10 +129,28 @@ const getApplicationsForJobPosting = async (req, res, next) => {
       .find({
         _id: { $in: jobPostingFound.applications },
       })
-      .populate("jobSeeker");
-    return res.status(404).json({
+      .populate([
+        { path: "jobPosting" },
+        {
+          path: "jobSeeker",
+          populate: { path: "user" },
+        },
+      ]);
+
+    formattedApplication = applicationData.map((app) => ({
+      appId: app._id,
+      appStatus: app.status,
+      appCreatedAt: app.createdAt,
+      seekerId: app.jobSeeker._id,
+      seekerSkills: app.jobSeeker.skills,
+      seekerUserId: app.jobSeeker.user._id,
+      seekerUserName: app.jobSeeker.user.name,
+      seekerUserEmail: app.jobSeeker.user.email,
+    }));
+
+    return res.status(200).json({
       message: "Job posting Applications",
-      data: applicationData,
+      data: formattedApplication,
     });
   } catch (err) {
     console.log(err.message);
@@ -147,7 +165,7 @@ const editApplicationsForJobPosting = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const applicationId = req.params.id;
-    const status = req.body.status;
+    const { status } = req.body;
 
     const applicationFound = await applicationModel
       .findById(applicationId)
@@ -167,32 +185,37 @@ const editApplicationsForJobPosting = async (req, res, next) => {
           },
         ],
       });
+
     if (!applicationFound) {
       return res.status(404).json({
         message: "Application not found",
       });
     }
+
     console.log(
       applicationFound.jobPosting.employer.user._id.toString(),
       userId
     );
+
     if (applicationFound.jobPosting.employer.user._id.toString() !== userId) {
       return res.status(403).json({
         message: "Unauthorized",
       });
     }
+
     if (applicationFound.status === status) {
       return res.status(400).json({
         message: `Application is already ${status}`,
       });
     }
+
     await applicationModel.findByIdAndUpdate(
       applicationFound._id,
       { $set: { status } },
       { new: true }
     );
 
-    res.status(501).json({
+    res.status(200).json({
       message: "Successfully edited application",
     });
   } catch (err) {
