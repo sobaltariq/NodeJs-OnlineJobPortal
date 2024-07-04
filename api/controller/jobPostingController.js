@@ -1,3 +1,4 @@
+const applicationModel = require("../models/applicationModel");
 const employerModel = require("../models/employerModel");
 const jobPostingModel = require("../models/jobPostingModel");
 
@@ -259,6 +260,8 @@ const deleteJobPosting = async (req, res, next) => {
       { _id: employerFound._id },
       { $pull: { jobPostings: jobId } }
     );
+
+    await applicationModel.deleteMany({ jobPosting: jobId });
 
     return res.status(201).json({
       message: "Deleted job posting",
