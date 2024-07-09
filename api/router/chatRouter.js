@@ -6,18 +6,15 @@ const {
 } = require("../validator/createChatValidator");
 const validateUser = require("../middleware/validateUser");
 
-module.exports = (wss) => {
-  const router = express.Router();
+const router = express.Router();
 
-  router.post(
-    "/send",
-    verifyLoginToken,
-    createChatValidationRules(),
-    validateUser,
-    sendMessage(wss) // Pass wss to sendMessage function
-  );
+router.post(
+  "/send",
+  verifyLoginToken,
+  createChatValidationRules(),
+  validateUser
+);
 
-  router.get("/:id/message", verifyLoginToken, getChatHistory);
+router.get("/:appId", verifyLoginToken, getChatHistory);
 
-  return router;
-};
+module.exports = router;

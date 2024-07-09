@@ -3,25 +3,33 @@ const { body } = require("express-validator");
 const createChatValidationRules = () => {
   return [
     body("application")
-      .isMongoId()
-      .withMessage("Invalid application ID")
       .notEmpty()
-      .withMessage("Application ID is required"),
+      .withMessage("Application ID is required")
+      .isMongoId()
+      .withMessage("Invalid application ID"),
     body("employer")
-      .isMongoId()
-      .withMessage("Invalid employer ID")
       .notEmpty()
-      .withMessage("Employer ID is required"),
+      .withMessage("Employer ID is required")
+      .isMongoId()
+      .withMessage("Invalid employer ID"),
     body("seeker")
+      .notEmpty()
+      .withMessage("Job seeker ID is required")
       .isMongoId()
-      .withMessage("Invalid job seeker ID")
-      .notEmpty()
-      .withMessage("Job seeker ID is required"),
-    body("message")
-      .notEmpty()
-      .withMessage("Message is required")
-      .isString()
-      .withMessage("Message must be a string"),
+      .withMessage("Invalid job seeker ID"),
+    body("messages")
+      .isArray({ min: 1 })
+      .withMessage("At least one message is required")
+      .custom((messages) => {
+        // Validate each message in the array
+        return messages.every((message) => {
+          return (
+            typeof message.content === "string" &&
+            message.content.trim().length > 0
+          );
+        });
+      })
+      .withMessage("Each message must have non-empty content"),
   ];
 };
 

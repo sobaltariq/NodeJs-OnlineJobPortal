@@ -211,7 +211,7 @@ const editApplicationsForJobPosting = async (req, res, next) => {
 
     await applicationModel.findByIdAndUpdate(
       applicationFound._id,
-      { $set: { status } },
+      { $set: { status, chatStarted: status === "accepted" ? true : false } },
       { new: true }
     );
 

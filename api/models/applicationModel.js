@@ -17,6 +17,14 @@ const applicationSchema = mongoose.Schema(
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
+    chatStarted: {
+      type: Boolean,
+      default: false,
+    },
+    chat: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat",
+    },
   },
   { timestamps: true }
 );

@@ -1,19 +1,17 @@
 const express = require("express");
-const http = require("http");
-const WebSocket = require("ws");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 
-const server = http.createServer(app);
-// WebSocket integration with HTTP server
-const wss = new WebSocket.Server({ server });
+const http = require("http");
+const WebSocket = require("ws");
+const app = express();
 
 const adminRouter = require("./api/router/adminRouter");
 const employerRouter = require("./api/router/employerRouter");
 const jobSeekerRouter = require("./api/router/jobSeekerRouter");
-const chatRouter = require("./api/router/chatRouter")(wss);
+const chatRouter = require("./api/router/chatRouter");
 
 // for env
 require("dotenv").config();
@@ -43,24 +41,6 @@ mongoose
 
 app.use(express.json());
 
-// WebSocket connection handling
-wss.on("connection", (ws) => {
-  console.log("New client connected");
-
-  ws.on("message", (message) => {
-    console.log("Received message:", message);
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
-  });
-
-  ws.on("close", () => {
-    console.log("Client disconnected");
-  });
-});
-
 app.get("/", (req, res, next) => {
   let myIp = req.ip?.replace(/^.*:/, "");
   res.status(200).json({
@@ -78,6 +58,26 @@ app.use((req, res, next) => {
   res.status(404).json({
     message: "Page Not Found!",
     error: "404",
+  });
+});
+
+const server = http.createServer(app);
+
+// WebSocket server
+const wss = new WebSocket.Server({ server: server });
+
+// WebSocket connection handling
+wss.on("connection", (ws) => {
+  console.log("WebSocket client connected");
+
+  // Example: Echo messages back to the client
+  ws.on("message", (message) => {
+    console.log(`Received message: ${message}`);
+    ws.send(`You sent: ${message}`);
+  });
+
+  ws.on("close", () => {
+    console.log("WebSocket client disconnected");
   });
 });
 
