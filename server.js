@@ -4,10 +4,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 
-const http = require("http");
-const WebSocket = require("ws");
-const app = express();
-
 const adminRouter = require("./api/router/adminRouter");
 const employerRouter = require("./api/router/employerRouter");
 const jobSeekerRouter = require("./api/router/jobSeekerRouter");
@@ -58,26 +54,6 @@ app.use((req, res, next) => {
   res.status(404).json({
     message: "Page Not Found!",
     error: "404",
-  });
-});
-
-const server = http.createServer(app);
-
-// WebSocket server
-const wss = new WebSocket.Server({ server: server });
-
-// WebSocket connection handling
-wss.on("connection", (ws) => {
-  console.log("WebSocket client connected");
-
-  // Example: Echo messages back to the client
-  ws.on("message", (message) => {
-    console.log(`Received message: ${message}`);
-    ws.send(`You sent: ${message}`);
-  });
-
-  ws.on("close", () => {
-    console.log("WebSocket client disconnected");
   });
 });
 
