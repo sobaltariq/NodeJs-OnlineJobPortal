@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const http = require("http");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
@@ -8,6 +9,15 @@ const adminRouter = require("./api/router/adminRouter");
 const employerRouter = require("./api/router/employerRouter");
 const jobSeekerRouter = require("./api/router/jobSeekerRouter");
 const chatRouter = require("./api/router/chatRouter");
+
+// Import socket.io setup
+const initializeSocketServer = require("./websocket");
+
+// Create HTTP server
+const server = http.createServer(app);
+
+// Initialize Socket.IO server
+initializeSocketServer(server);
 
 // for env
 require("dotenv").config();
