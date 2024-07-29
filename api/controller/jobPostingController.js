@@ -1,4 +1,5 @@
 const applicationModel = require("../models/applicationModel");
+const chatModel = require("../models/chatModel");
 const employerModel = require("../models/employerModel");
 const jobPostingModel = require("../models/jobPostingModel");
 
@@ -250,6 +251,7 @@ const deleteJobPosting = async (req, res, next) => {
         message: "Job posting not found or does not belong to this employer",
       });
     }
+    await chatModel.deleteMany({ application: { $in: jobFound.applications } });
 
     await jobPostingModel.deleteOne({
       _id: jobId,

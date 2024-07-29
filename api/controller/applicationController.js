@@ -38,6 +38,8 @@ const getMyApplications = async (req, res, next) => {
     const formattedApplications = applicationFound.map((app) => ({
       appDate: app.createdAt,
       appStatus: app.status,
+      appId: app._id,
+      chatStarted: app.chatStarted,
       jobId: app.jobPosting._id,
       jobTitle: app.jobPosting.title,
       jobCreatedAt: app.jobPosting.createdAt,
@@ -45,6 +47,7 @@ const getMyApplications = async (req, res, next) => {
 
     return res.status(200).json({
       message: "get my job applications",
+      // data: applicationFound,
       data: formattedApplications,
     });
   } catch (err) {
@@ -67,6 +70,7 @@ const applyJobApplication = async (req, res, next) => {
     }
 
     const jobFound = await jobPostingModel.findById(jobId);
+    console.log(jobFound);
     if (!jobFound) {
       return res.status(404).json({ message: "Job not found" });
     }
@@ -74,6 +78,7 @@ const applyJobApplication = async (req, res, next) => {
     const isAlreadyApplied = await applicationModel.findOne({
       jobSeeker: seekerFound._id,
       jobPosting: jobFound._id,
+      jobEmployer: jobFound.employer,
     });
     if (isAlreadyApplied) {
       return res.status(404).json({ message: "Already has applied" });
@@ -82,6 +87,7 @@ const applyJobApplication = async (req, res, next) => {
     const newApplication = new applicationModel({
       jobSeeker: seekerFound._id,
       jobPosting: jobFound._id,
+      jobEmployer: jobFound.employer,
     });
 
     await newApplication.save();
@@ -90,9 +96,17 @@ const applyJobApplication = async (req, res, next) => {
       { $push: { applications: newApplication._id } },
       { new: true }
     );
+
+    const newChat = new chatModel({
+      application: newApplication._id,
+      employer: jobFound.employer,
+      seeker: seekerFound._id,
+    });
+    await newChat.save();
+
     return res.status(201).json({
       message: "Job application submitted successfully",
-      // data: newApplication,
+      data: newApplication,
     });
   } catch (err) {
     console.log(err.message);

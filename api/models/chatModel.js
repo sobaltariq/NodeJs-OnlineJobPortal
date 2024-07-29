@@ -1,5 +1,22 @@
 const mongoose = require("mongoose");
 
+const chatMessageSchema = new mongoose.Schema({
+  sender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  content: {
+    type: String,
+    required: [true, "Message content is required"],
+    maxLength: [500, "Message cannot be more than 500 characters"],
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const chatSchema = new mongoose.Schema(
   {
     application: {
@@ -17,26 +34,11 @@ const chatSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    messages: [
-      {
-        sender: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        content: {
-          type: String,
-          required: true,
-          maxLength: [500, "Message cannot be more than 500 characters"],
-        },
-        timestamp: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+    messages: [chatMessageSchema],
   },
   { timestamps: true }
 );
+
+chatSchema.index({ application: 1, employer: 1, seeker: 1 });
 
 module.exports = mongoose.model("Chat", chatSchema);

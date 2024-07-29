@@ -7,6 +7,11 @@ const applicationSchema = mongoose.Schema(
       ref: "JobSeeker",
       required: true,
     },
+    jobEmployer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employer", // Assuming you have an Employer model
+      required: true,
+    },
     jobPosting: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "JobPosting",
