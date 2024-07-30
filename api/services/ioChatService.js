@@ -20,14 +20,15 @@ const isUserInApplication = (user, application) => {
 
 const handleJoinRoom = async (socket, applicationId) => {
   const { user } = socket;
-  console.log(socket, applicationId);
   console.log("applicationId", socket.applications);
   //   applicationId string 66a62ae82698bc9aa735a28c
   if (!socket.applications.includes(applicationId)) {
+    console.log("Access denied. Cannot join this room");
     return socket.emit("error", "Access denied. Cannot join this room.");
   }
   const applicationFound = await applicationModel.findById(applicationId);
   if (!applicationFound) {
+    console.log("Access denied. Cannot join this room");
     return socket.emit("error", "Access denied. Cannot join this room.");
   }
   //   console.log(applicationFound);
@@ -59,7 +60,7 @@ const handleSendMessage = async (io, socket, messageData) => {
 
   const isInRoom = Array.from(socket.rooms).includes(applicationId);
   if (!isInRoom) {
-    console.log("err");
+    console.log("Access denied. Cannot send message to this room.");
     return socket.emit(
       "error",
       "Access denied. Cannot send message to this room."
@@ -67,7 +68,7 @@ const handleSendMessage = async (io, socket, messageData) => {
   }
   console.log("isInRoom", socket.rooms, isInRoom);
   const { user } = socket;
-  console.log(`applicationId: ${applicationId}, content: ${content}`);
+  // console.log(`applicationId: ${applicationId}, content: ${content}`);
 
   const applicationFound = await applicationModel
     .findById(applicationId)
@@ -107,8 +108,31 @@ const handleSendMessage = async (io, socket, messageData) => {
   console.log("message sent");
 };
 
+const handleMessagesHistory = async (io, socket, applicationId) => {
+  const isInRoom = Array.from(socket.rooms).includes(applicationId);
+  if (!isInRoom) {
+    console.log("Access denied. Cannot send message to this room.");
+    return socket.emit(
+      "error",
+      "Access denied. Cannot send message to this room."
+    );
+  }
+  console.log("isInRoom", socket.rooms, isInRoom);
+
+  const chatFound = await chatModel.findOne({
+    application: applicationId,
+  });
+  if (!chatFound) {
+    console.error(`Chat history not found: ${error.message}`);
+    socket.emit("error", "Chat history not found");
+  }
+  console.log("getChatHistory Found", chatFound.messages);
+  socket.emit("chatHistory", chatFound.messages);
+};
+
 module.exports = {
   createChat,
   handleJoinRoom,
   handleSendMessage,
+  handleMessagesHistory,
 };

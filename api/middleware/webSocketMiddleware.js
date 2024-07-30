@@ -46,9 +46,9 @@ const checkWSApplicationStatus = async (socket, next) => {
     }
 
     if (userRole === "job seeker") {
-      checkJobSeekerApplications(socket, userId, next);
+      await checkJobSeekerApplications(socket, userId, next);
     } else if (userRole === "employer") {
-      checkJobEmployerApplications(socket, userId, next);
+      await checkJobEmployerApplications(socket, userId, next);
     } else {
       return next(new Error("Access denied. Invalid user role."));
     }
@@ -101,6 +101,7 @@ const checkJobEmployerApplications = async (socket, userId, next) => {
     console.log("employer applications id", app._id.toString());
     return app._id.toString();
   });
+  // console.log("socket.applications", socket.applications);
 };
 
 module.exports = { verifyWSToken, checkWSApplicationStatus };

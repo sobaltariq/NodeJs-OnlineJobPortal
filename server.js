@@ -8,7 +8,7 @@ const app = express();
 const adminRouter = require("./api/router/adminRouter");
 const employerRouter = require("./api/router/employerRouter");
 const jobSeekerRouter = require("./api/router/jobSeekerRouter");
-// const chatRouter = require("./api/router/chatRouter");
+const chatRouter = require("./api/router/chatRouter");
 
 // Import socket.io setup
 const initializeSocketServer = require("./socket/socketServer");
@@ -58,7 +58,7 @@ app.get("/", (req, res, next) => {
 app.use("/job-seeker", jobSeekerRouter);
 app.use("/employer", employerRouter);
 app.use("/admin", adminRouter);
-// app.use("/chat", chatRouter);
+app.use("/chat", chatRouter);
 
 app.use((req, res, next) => {
   res.status(404).json({
