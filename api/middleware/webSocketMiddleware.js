@@ -12,7 +12,8 @@ const verifyWSToken = (socket, next) => {
   // const authHeader = socket.handshake.headers.authorization;
 
   // console.log(socket.handshake.auth.token);
-  const authHeader = socket.handshake.auth.token;
+  const authHeader =
+    socket.handshake.auth.token || socket.handshake.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return next(new Error("Access denied. No token provided."));
@@ -38,56 +39,16 @@ const verifyWSToken = (socket, next) => {
 
 const checkWSApplicationStatus = async (socket, next) => {
   try {
-    // console.log(socket.user);
+    const { id: userId, role: userRole } = socket.user;
+    console.log(userId, userRole);
     if (!socket.user) {
       return next(new Error("Authentication error: User not authenticated"));
     }
-    const userId = socket.user.id;
-    const userRole = socket.user.role;
-    // console.log(userRole, userId);
 
     if (userRole === "job seeker") {
-      const seekerFound = await jobSeekerModel.findOne({ user: userId });
-      if (!seekerFound) {
-        return next(new Error("Access denied. Seeker Not Found"));
-      }
-      const appFound = await applicationModel.find({
-        jobSeeker: seekerFound._id,
-        status: "accepted",
-      });
-
-      if (appFound.length <= 0) {
-        return next(
-          new Error("Access denied. No accepted applications found.")
-        );
-      }
-
-      socket.applications = appFound.map((app) => {
-        app._id.toString();
-        console.log("seeker applications id", app._id.toString());
-      });
+      checkJobSeekerApplications(socket, userId, next);
     } else if (userRole === "employer") {
-      const employerFound = await employerModel.findOne({ user: userId });
-      if (!employerFound) {
-        return next(new Error("Access denied. Employer Not Found"));
-      }
-      // console.log("employer", employerFound);
-      const appFound = await applicationModel.find({
-        jobEmployer: employerFound._id,
-        status: "accepted",
-      });
-      // console.log(appFound);
-
-      if (appFound.length <= 0) {
-        return next(
-          new Error("Access denied. No accepted applications found.")
-        );
-      }
-
-      socket.applications = appFound.map((app) => {
-        app._id.toString();
-        console.log("employer applications id", app._id.toString());
-      });
+      checkJobEmployerApplications(socket, userId, next);
     } else {
       return next(new Error("Access denied. Invalid user role."));
     }
@@ -98,6 +59,48 @@ const checkWSApplicationStatus = async (socket, next) => {
   } catch (error) {
     next(new Error(`Error checking application status: ${error.message}`));
   }
+};
+
+const checkJobSeekerApplications = async (socket, userId, next) => {
+  const seekerFound = await jobSeekerModel.findOne({ user: userId });
+  if (!seekerFound) {
+    return next(new Error("Access denied. Seeker Not Found"));
+  }
+  const appFound = await applicationModel.find({
+    jobSeeker: seekerFound._id,
+    status: "accepted",
+  });
+
+  if (appFound.length <= 0) {
+    return next(new Error("Access denied. No accepted applications found."));
+  }
+
+  socket.applications = appFound.map((app) => {
+    console.log("seeker applications id", app._id.toString());
+    return app._id.toString();
+  });
+};
+
+const checkJobEmployerApplications = async (socket, userId, next) => {
+  const employerFound = await employerModel.findOne({ user: userId });
+  if (!employerFound) {
+    return next(new Error("Access denied. Employer Not Found"));
+  }
+  // console.log("employer", employerFound);
+  const appFound = await applicationModel.find({
+    jobEmployer: employerFound._id,
+    status: "accepted",
+  });
+  // console.log(appFound);
+
+  if (appFound.length <= 0) {
+    return next(new Error("Access denied. No accepted applications found."));
+  }
+
+  socket.applications = appFound.map((app) => {
+    console.log("employer applications id", app._id.toString());
+    return app._id.toString();
+  });
 };
 
 module.exports = { verifyWSToken, checkWSApplicationStatus };

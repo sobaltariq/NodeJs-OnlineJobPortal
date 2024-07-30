@@ -11,7 +11,7 @@ const jobSeekerRouter = require("./api/router/jobSeekerRouter");
 // const chatRouter = require("./api/router/chatRouter");
 
 // Import socket.io setup
-const initializeSocketServer = require("./websocket");
+const initializeSocketServer = require("./socket/socketServer");
 
 // Create HTTP server
 const server = http.createServer(app);
