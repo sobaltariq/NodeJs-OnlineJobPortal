@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const { encryptPassword } = require("../utils/encryptPassword");
 const { comparePassword } = require("../utils/comparePassword");
 const { generateToken } = require("../utils/jwtTokenUtils");
+const chatModel = require("../models/chatModel");
+const applicationModel = require("../models/applicationModel");
 
 const getAllSeeker = async (req, res, next) => {
   try {
@@ -302,7 +304,11 @@ const deleteSeeker = async (req, res, next) => {
         message: "User not found",
       });
     }
-    await jobSeekerModel.findOneAndDelete({ user: userId });
+    const deleteSeeker = await jobSeekerModel.findOneAndDelete({
+      user: userId,
+    });
+    await chatModel.deleteMany({ seeker: deleteSeeker._id });
+    await applicationModel.deleteMany({ jobSeeker: deleteSeeker._id });
 
     return res.status(200).json({
       message: "Job Seeker has been deleted",

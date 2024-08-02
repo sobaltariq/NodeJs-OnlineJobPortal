@@ -5,6 +5,8 @@ const { comparePassword } = require("../utils/comparePassword");
 const { encryptPassword } = require("../utils/encryptPassword");
 const { generateToken } = require("../utils/jwtTokenUtils");
 const jobPostingModel = require("../models/jobPostingModel");
+const chatModel = require("../models/chatModel");
+const applicationModel = require("../models/applicationModel");
 
 const getAllEmployers = async (req, res, next) => {
   try {
@@ -263,6 +265,8 @@ const deleteEmployer = async (req, res, next) => {
       user: userId,
     });
     await jobPostingModel.deleteMany({ employer: deleteEmployer._id });
+    await chatModel.deleteMany({ employer: deleteEmployer._id });
+    await applicationModel.deleteMany({ jobEmployer: deleteEmployer._id });
 
     return res.status(200).json({
       message: "Employer has been deleted",
