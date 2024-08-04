@@ -13,7 +13,7 @@ const chatModel = require("../api/models/chatModel");
 function initializeSocketServer(server) {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: `${process.env.ALLOWED_ORIGINS}`,
       methods: ["GET", "POST"],
       allowedHeaders: ["Content-Type"],
       credentials: true,

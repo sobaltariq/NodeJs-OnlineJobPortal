@@ -27,7 +27,7 @@ app.disable("x-powered-by");
 
 // enabling CORS for some specific origins only.
 let corsOptions = {
-  origin: ["http://localhost:3000"],
+  origin: [`${process.env.ALLOWED_ORIGINS}`],
 };
 
 app.use(cors(corsOptions));
@@ -75,6 +75,7 @@ server.listen(process.env.PORT, () => {
 });
 
 // npm init
-// npm i express mongoose body-parser bcrypt jsonwebtoken nodemon dotenv multer nodemailer randomstring
-// npm i express-session express-validator
-// npm i ws
+// npm i express mongoose body-parser bcrypt jsonwebtoken nodemon dotenv
+// npm i express-validator
+// npm i cors
+// npm i socket.io
